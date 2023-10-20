@@ -146,4 +146,10 @@ sudo bash "scriptname.sh"
    ```
    kubectl get nodes
    ```
+- [kubelet-check] The HTTP call equal to 'curl -sSL http://localhost:10248/healthz' failed with error: Get "http://localhost:10248/healthz": dial tcp [::1]:10248: connect: connection refused.
+
+  Solve:
+   ```
+   swapoff -a
+   ```
 ################################################    THANK YOU    ################################################
