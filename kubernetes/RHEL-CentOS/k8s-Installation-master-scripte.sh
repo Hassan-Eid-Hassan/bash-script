@@ -80,10 +80,9 @@ echo '#######################################################
       #######################################################'
 echo
 
-yum install -y yum-utils dnf
+yum install -y yum-utils dnf iproute-tc
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-dnf install -y https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
-dnf install -y docker-ce
+yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 echo
 echo '########################################################
@@ -112,17 +111,17 @@ echo '##########################################################################
       #######################################################################################'
 echo
 
-touch /etc/yum.repos.d/kubernetes.repo
-echo '[kubernetes]
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
 name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.29/rpm/
 enabled=1
-gpgcheck=0
-repo_gpgcheck=0
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-exclude=kubelet kubeadm kubectl' > /etc/yum.repos.d/kubernetes.repo
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
+EOF
 
-yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 
 echo
 echo '#######################################################################################
@@ -130,8 +129,7 @@ echo '##########################################################################
       #######################################################################################'
 echo
 
-systemctl enable kubelet
-systemctl start kubelet
+sudo systemctl enable --now kubelet
 
 echo
 echo '#######################################################################################
@@ -146,14 +144,6 @@ firewall-cmd --permanent --add-port=10251/tcp
 firewall-cmd --permanent --add-port=10252/tcp
 firewall-cmd --permanent --add-port=10255/tcp
 firewall-cmd --reload
-
-echo
-echo '#######################################################################################
-      ensur that "iproute-tc" installed corructrlly
-      #######################################################################################'
-echo
-
-yum install -y iproute-tc
 
 echo
 echo '#######################################################################################
