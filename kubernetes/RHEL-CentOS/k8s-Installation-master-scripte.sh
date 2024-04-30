@@ -105,6 +105,16 @@ apply_pod_network() {
     echo "Pod network applied."
 }
 
+print_join_command() {
+    echo "Fetching join command for worker nodes..."
+    # Retrieve the join command from kubeadm
+    join_command=$(kubeadm token create --print-join-command)
+    
+    # Print the join command
+    echo "Use the following command to join worker nodes to the cluster:"
+    echo "$join_command"
+}
+
 # Main function to execute all steps
 main() {
     log_output
@@ -146,6 +156,9 @@ EOF
     echo "Step 7: Initializing Kubernetes..."
     initialize_k8s()
     apply_pod_network()
+
+    # Fetch and print the join command
+    print_join_command()
 
     echo "Installation completed successfully."
 }
