@@ -1,164 +1,129 @@
 #!/bin/bash
 
-echo '############################################
-      Remove the old version of Docker
-      ############################################'
-echo
+set -e  # Exit script on any command failure
 
-yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc -y
+# Constants
+DOCKER_REPO_URL="https://download.docker.com/linux/centos/docker-ce.repo"
+K8S_REPO_URL="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/"
+K8S_GPG_KEY="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key"
+LOG_FILE="/var/log/k8s_install.log"
 
-echo
-echo '############################################
-      Remove old version of K8s
-      ############################################'
-echo
+# Usage function
+usage() {
+    echo "Usage: $0"
+    echo "This script installs Kubernetes worker on a new server."
+    echo "Logs are stored at $LOG_FILE"
+}
 
-yum remove kube* -y
+# Function to log output to file
+log_output() {
+    exec &> >(tee -a "$LOG_FILE")
+}
 
-find / -name "kube*" -type d -exec rm -vfr {} \;
-find / -name "kube*" -type s -exec rm -vf {} \;
-find / -name "kube*" -type f -exec rm -vf {} \;
+# Function to install Docker
+install_docker() {
+    echo "Installing Docker..."
+    yum install -y yum-utils dnf iproute-tc
+    yum-config-manager --add-repo "$DOCKER_REPO_URL"
+    yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    systemctl start docker
+    systemctl enable docker
+    echo "Docker installation completed."
+}
 
-echo
-echo '#############################################
-      Disable SELinux enforcement
-      #############################################'
-echo
+# Function to configure Docker
+configure_docker() {
+    echo "Configuring Docker..."
+    cat <<EOF > /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  }
+}
+EOF
+    systemctl restart docker
+    echo "Docker configuration completed."
+}
 
-setenforce 0
+# Function to install Kubernetes
+install_k8s() {
+    echo "Installing Kubernetes..."
+    cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=$K8S_REPO_URL
+enabled=1
+gpgcheck=0
+gpgkey=$K8S_GPG_KEY
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
+EOF
+    sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+    echo "Kubernetes installation completed."
+}
 
-sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+# Function to start Kubernetes services
+start_k8s_services() {
+    echo "Starting Kubernetes services..."
+    sudo systemctl enable --now kubelet
+    echo "Kubernetes services started."
+}
 
+# Function to configure firewall
+configure_firewall() {
+    echo "Configuring firewall..."
+    firewall-cmd --permanent --add-port=6443/tcp
+    firewall-cmd --permanent --add-port=2379-2380/tcp
+    firewall-cmd --permanent --add-port=10250/tcp
+    firewall-cmd --permanent --add-port=10251/tcp
+    firewall-cmd --permanent --add-port=10252/tcp
+    firewall-cmd --permanent --add-port=10255/tcp
+    firewall-cmd --add-masquerade --permanent
+    firewall-cmd --reload
+    echo "Firewall configuration completed."
+}
 
-echo
-echo '###############################################
-      Set bridged packets to traverse iptables rules
-      ###############################################'
-echo
+# Main function to execute all steps
+main() {
+    log_output
+    echo "Starting Kubernetes worker installation..."
+    
+    echo "Step 1: Removing old versions..."
+    yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc -y
+    yum remove kube* -y
 
-cat <<EOF > /etc/sysctl.d/k8s.conf
+    echo "Step 2: Disabling SELinux..."
+    setenforce 0
+    sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+
+    echo "Step 3: Setting bridged packets to traverse iptables rules..."
+    cat <<EOF > /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 EOF
+    echo 1 > /proc/sys/net/ipv4/ip_forward
+    sysctl --system
 
-echo 1 > /proc/sys/net/ipv4/ip_forward
+    echo "Step 4: Disabling all memory swaps..."
+    swapoff -a
+    sed -i '/\sswap\s/s/^/#/' /etc/fstab
+    echo "Please check any swap entries in /etc/fstab."
 
-sysctl --system
+    echo "Step 5: Enabling transparent masquerading and VxLAN..."
+    modprobe br_netfilter
 
-echo
-echo '#################################################
-      Disable all memory swaps to increase performance
-      #################################################'
-echo
+    # Install Docker and Kubernetes
+    install_docker()
+    configure_docker()
+    install_k8s()
+    start_k8s_services()
 
-swapoff -a
+    echo "Step 6: Configuring firewall..."
+    configure_firewall()
 
-echo '############################################################
-      #####     NOTE!!!: hash any swap in /etc/fstab     #########
-      ############################################################'
+    echo "Installation completed successfully."
+}
 
-echo
-echo '####################################################################################################################
-      Enable transparent masquerading and facilitate Virtual Extensible LAN (VxLAN) traffic for communication between Kubernetes pods across the cluster
-      ####################################################################################################################'
-echo
-
-modprobe br_netfilter
-
-echo
-echo '#################################################
-      Enable IP masquerade at the firewall
-      #################################################'
-echo
-
-firewall-cmd --add-masquerade --permanent
-firewall-cmd --reload
-
-echo
-echo '#######################################################
-      Add the repository for the docker installation package
-      #######################################################'
-echo
-
-yum install -y yum-utils dnf iproute-tc
-yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-echo
-echo '#######################################################
-      Start the docker service
-      #######################################################'
-echo
-
-systemctl start docker
-systemctl enable docker
-
-echo
-echo '#######################################################
-      Change docker to use systemd cgrouyp driver
-      #######################################################'
-echo
-
-echo '{
-  "exec-opts": ["native.cgroupdriver=systemd"]
-}' > /etc/docker/daemon.json
-
-systemctl restart docker
-
-echo
-echo '#######################################################################################
-      Add the Kubernetes repository and  Install all the necessary components for Kubernetes
-      #######################################################################################'
-echo
-
-cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://pkgs.k8s.io/core:/stable:/v1.29/rpm/
-enabled=1
-gpgcheck=0
-gpgkey=https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key
-exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
-EOF
-
-sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
-
-echo
-echo '#######################################################################################
-      Start the Kubernetes services and enable them
-      #######################################################################################'
-echo
-
-sudo systemctl enable --now kubelet
-
-echo
-echo '#######################################################################################
-      Adding the K8s ports to firewall
-      #######################################################################################'
-echo
-
-firewall-cmd --permanent --add-port=6783/tcp
-firewall-cmd --permanent --add-port=10250/tcp
-firewall-cmd --permanent --add-port=10255/tcp
-firewall-cmd --permanent --add-port=30000-32767/tcp
-firewall-cmd  --reload
-
-echo
-echo '#######################################################################################
-      PREREQUISITES FOR WORKER NODES
-      #######################################################################################'
-echo
-
-mkdir -p /etc/containerd
-containerd config default > /etc/containerd/config.toml
-systemctl restart containerd
-
-echo
-echo '#######################################################################################
-      ALL GOOD ... YOU DID GREATE <3
-      ------------------------------
-      Please paste the command that was generated from kubeadm init here to join k8s cluster.
-      
-      The command like:
-      kubeadm join 192.168.1.16:6443 --token s5ukm8.vow9nnltdvrq6as2 --discovery-token- ...
-      #######################################################################################'
+# Run the main function
+main
