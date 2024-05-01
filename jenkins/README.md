@@ -16,13 +16,14 @@ This script automates the installation and setup of Jenkins on Ubuntu.
   ```bash
   chmod +x scriptname.sh
   sudo ./scriptname.sh
-```
+  ```
 - **Second Method:**
-```bash
-sudo bash "scriptname.sh"
-```
+  ```bash
+  sudo bash "scriptname.sh"
+  ```
 
 ## Final Steps
 Follow the script's final output for instructions on accessing your Jenkins installation and retrieving the initial admin password.
 
+## Thank You
 Thank you for using the Jenkins installation script! Let us know if you have any issues or feedback.
