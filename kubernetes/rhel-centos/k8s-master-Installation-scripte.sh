@@ -3,11 +3,13 @@
 set -e  # Exit script on any command failure
 
 # Constants
+POD_NETWORK_URL="https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml"
 DOCKER_REPO_URL="https://download.docker.com/linux/centos/docker-ce.repo"
 K8S_REPO_URL="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/"
 K8S_GPG_KEY="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key"
 POD_NETWORK_CIDR="192.168.0.0/16"
 LOG_FILE="/var/log/k8s_install.log"
+AUTO_HASH_SWAP="true"
 
 # Usage function
 usage() {
@@ -27,8 +29,7 @@ install_docker() {
     yum install -y yum-utils dnf iproute-tc
     yum-config-manager --add-repo "$DOCKER_REPO_URL"
     yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-    systemctl start docker
-    systemctl enable docker
+    systemctl enable --now docker
     echo "Docker installation completed."
 }
 
@@ -61,14 +62,8 @@ gpgkey=$K8S_GPG_KEY
 exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
 EOF
     sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
-    echo "Kubernetes installation completed."
-}
-
-# Function to start Kubernetes services
-start_k8s_services() {
-    echo "Starting Kubernetes services..."
     sudo systemctl enable --now kubelet
-    echo "Kubernetes services started."
+    echo "Kubernetes installation completed."
 }
 
 # Function to configure firewall
@@ -83,6 +78,18 @@ configure_firewall() {
     firewall-cmd --add-masquerade --permanent
     firewall-cmd --reload
     echo "Firewall configuration completed."
+}
+
+
+# Configure containerd
+configure_containerd() {
+    echo "Configure containerd..."
+
+    mkdir -p /etc/containerd
+    containerd config default > /etc/containerd/config.toml
+    systemctl restart containerd
+
+    echo "Containerd configured."
 }
 
 # Function to initialize Kubernetes
@@ -101,7 +108,7 @@ initialize_k8s() {
 # Function to apply Pod network
 apply_pod_network() {
     echo "Applying Pod network..."
-    kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
+    kubectl apply -f $POD_NETWORK_URL
     echo "Pod network applied."
 }
 
@@ -121,8 +128,7 @@ main() {
     echo "Starting Kubernetes master installation..."
     
     echo "Step 1: Removing old versions..."
-    yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc -y
-    yum remove kube* -y
+    yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc kube* -y
 
     echo "Step 2: Disabling SELinux..."
     setenforce 0
@@ -138,27 +144,30 @@ EOF
 
     echo "Step 4: Disabling all memory swaps..."
     swapoff -a
-    sed -i '/\sswap\s/s/^/#/' /etc/fstab
+    if [ $AUTO_HASH_SWAP == "true" ]
+    then
+        sed -i '/\sswap\s/s/^/#/' /etc/fstab
+    fi 
     echo "Please check any swap entries in /etc/fstab."
 
     echo "Step 5: Enabling transparent masquerading and VxLAN..."
     modprobe br_netfilter
 
     # Install Docker and Kubernetes
-    install_docker()
-    configure_docker()
-    install_k8s()
-    start_k8s_services()
+    install_docker
+    configure_docker
+    install_k8s
+    configure_containerd
 
     echo "Step 6: Configuring firewall..."
-    configure_firewall()
+    configure_firewall
 
     echo "Step 7: Initializing Kubernetes..."
-    initialize_k8s()
-    apply_pod_network()
+    initialize_k8s
+    apply_pod_network
 
     # Fetch and print the join command
-    print_join_command()
+    print_join_command
 
     echo "Installation completed successfully."
 }

@@ -1,113 +1,117 @@
 #!/bin/bash
 
-echo 'Remove the old version of Docker'
-echo
+set -e  # Exit script on any command failure
 
-yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc -y
+# Constants
+K8S_REPO_URL="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/"
+K8S_GPG_KEY="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key"
+LOG_FILE="/var/log/k8s_install.log"
+AUTO_HASH_SWAP="false"
 
-echo
-echo 'Remove old version of K8s'
-echo
+# Usage function
+usage() {
+    echo "Usage: $0"
+    echo "This script installs Kubernetes master on a new server."
+    echo "Logs are stored at $LOG_FILE"
+}
 
-yum remove kube* -y
+# Function to log output to file
+log_output() {
+    exec &> >(tee -a "$LOG_FILE")
+}
 
-find / -name "kube*" -type d -exec rm -vfr {} \;
-find / -name "kube*" -type s -exec rm -vf {} \;
-find / -name "kube*" -type f -exec rm -vf {} \;
+# Function to install Docker
+install_docker() {
+    echo "Installing Docker..."
+    yum install -y yum-utils dnf iproute-tc
+    yum install -y docker
+    systemctl enable --now docker
+    echo "Docker installation completed."
+}
 
-echo
-echo 'Disable SELinux enforcement'
-echo
+# Function to configure Docker
+configure_docker() {
+    echo "Configuring Docker..."
+    cat <<EOF > /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  }
+}
+EOF
+    systemctl restart docker
+    echo "Docker configuration completed."
+}
 
-setenforce 0
+# Function to install Kubernetes
+install_k8s() {
+    echo "Installing Kubernetes..."
+    cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=$K8S_REPO_URL
+enabled=1
+gpgcheck=0
+gpgkey=$K8S_GPG_KEY
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
+EOF
+    sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+    sudo systemctl enable --now kubelet
+    echo "Kubernetes installation completed."
+}
 
-sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+# Configure containerd
+configure_containerd() {
+    echo "Configure containerd..."
 
-echo
-echo 'Set bridged packets to traverse iptables rules'
-echo
+    mkdir -p /etc/containerd
+    containerd config default > /etc/containerd/config.toml
+    systemctl restart containerd
 
-cat <<EOF > /etc/sysctl.d/k8s.conf
+    echo "Containerd configured."
+}
+
+# Main function to execute all steps
+main() {
+    log_output
+    echo "Starting Kubernetes master installation..."
+    
+    echo "Step 1: Removing old versions..."
+    yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine podman runc kube* -y
+
+    echo "Step 2: Disabling SELinux..."
+    setenforce 0
+    sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+
+    echo "Step 3: Setting bridged packets to traverse iptables rules..."
+    cat <<EOF > /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 EOF
+    echo 1 > /proc/sys/net/ipv4/ip_forward
+    sysctl --system
 
-echo 1 > /proc/sys/net/ipv4/ip_forward
+    echo "Step 4: Disabling all memory swaps..."
+    swapoff -a
+    if [ $AUTO_HASH_SWAP == "true" ]
+    then
+        sed -i '/\sswap\s/s/^/#/' /etc/fstab
+    fi 
+    echo "Please check any swap entries in /etc/fstab."
 
-sysctl --system
+    echo "Step 5: Enabling transparent masquerading and VxLAN..."
+    modprobe br_netfilter
 
-echo
-echo 'Disable all memory swaps to increase performance'
-echo
+    # Install Docker and Kubernetes
+    install_docker
+    configure_docker
+    install_k8s
+    configure_containerd
 
-swapoff -a
+    echo "Installation completed successfully."
+}
 
-
-echo
-echo 'Enable transparent masquerading and facilitate Virtual Extensible LAN (VxLAN) traffic for communication between Kubernetes pods across the cluster'
-echo
-
-modprobe br_netfilter
-
-
-echo
-echo 'Add the repository for the docker installation package'
-echo
-
-yum install -y yum-utils dnf
-yum install -y docker
-
-echo
-echo 'Start the docker service'
-echo
-
-systemctl start docker
-systemctl enable docker
-
-echo
-echo 'Change docker to use systemd cgrouyp driver'
-echo
-
-echo '{
-  "exec-opts": ["native.cgroupdriver=systemd"]
-}' > /etc/docker/daemon.json
-
-systemctl restart docker
-
-echo
-echo 'Add the Kubernetes repository and  Install all the necessary components for Kubernetes'
-echo
-
-touch /etc/yum.repos.d/kubernetes.repo
-echo '[kubernetes]
-name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
-enabled=1
-gpgcheck=0
-repo_gpgcheck=0
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-exclude=kubelet kubeadm kubectl' > /etc/yum.repos.d/kubernetes.repo
-
-yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
-
-echo
-echo 'Start the Kubernetes services and enable them'
-echo
-
-systemctl enable kubelet
-systemctl start kubelet
-
-
-echo
-echo 'ensur that "iproute-tc" installed corructrlly'
-echo
-
-yum install -y iproute-tc
-
-echo
-echo 'PREREQUISITES FOR WORKER NODES'
-echo
-
-mkdir -p /etc/containerd
-containerd config default > /etc/containerd/config.toml
-systemctl restart containerd
+# Run the main function
+main
