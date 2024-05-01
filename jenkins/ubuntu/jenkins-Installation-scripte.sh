@@ -18,8 +18,8 @@ while true; do
     case "$answer" in
         y|Y)
             echo "Installing Java 17..."
-            sudo yum update -y
-            sudo yum install -y java-17-amazon-corretto-devel
+            sudo apt update -y
+            sudo apt install -y openjdk-17-jdk
             echo "Java 17 installed."
             break
             ;;
@@ -36,23 +36,27 @@ done
 
 # Add Jenkins repository and key
 echo "Adding Jenkins repository..."
-wget -q -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo || true
+wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key || true
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null || true
 
-echo "Importing the GPG key..."
-# Import Jenkins GPG key
-rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key || true
-
-echo "Installing Jenkins..."
 # Install Jenkins
-sudo yum update -y
-sudo yum install -y jenkins
+echo "Installing Jenkins..."
+sudo apt update -y
+sudo apt install -y jenkins
 
-echo "Starting and enabling Jenkins service..."
 # Start and enable Jenkins service
+echo "Starting and enabling Jenkins service..."
 sudo systemctl enable --now jenkins
 
+# Allow Jenkins port (8080) in UFW firewall
+echo "Configuring firewall..."
+if sudo ufw status | grep -q inactive; then
+    sudo ufw enable
+fi
+sudo ufw allow 8080/tcp
+
 echo "Installing Git..."
-# Install Git 
+# Install Git
 sudo yum install -y git 
 
 # Provide instructions to the user to access Jenkins
