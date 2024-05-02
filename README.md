@@ -65,17 +65,10 @@ Before running the scripts, ensure you have the following:
 - If you encounter any issues, check the logs for error messages and potential solutions.
 - Ensure that you have the required network connectivity and dependencies installed on your system.
 
-## License
-
-- Include information about the repository's license here (e.g., MIT License).
-
 ## Contribution Guidelines
 
-- Include guidelines for contributing to the repository, such as submitting issues, pull requests, or feedback.
-
-## Acknowledgements
-
-- Acknowledge any dependencies, libraries, or third-party services used in the scripts.
+- Contributions, such as issues, pull requests, and feedback, are welcome.
+- Please follow the repository's guidelines and code of conduct when contributing.
 
 ## Thank You
 
