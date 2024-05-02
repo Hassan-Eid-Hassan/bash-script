@@ -4,6 +4,11 @@ Welcome to the Bash Scripts Repository! This repository contains scripts for ins
 
 ## Repository Structure
 
+- **GitLab**: Contains scripts for installing GitLab Community Edition (CE).
+  - `install-gitlab-aws-linux.sh`: Script to install GitLab on AWS Linux EC2.
+  - `install-gitlab-rhel-centos.sh`: Script to install GitLab on RHEL/CentOS.
+  - `install-gitlab-ubuntu.sh`: Script to install GitLab on Ubuntu.
+
 - **Jenkins**: Contains scripts for installing Jenkins.
   - `jenkins-install-aws-linux.sh`: Script to install Jenkins on AWS Linux.
   - `jenkins-install-ubuntu.sh`: Script to install Jenkins on Ubuntu.
