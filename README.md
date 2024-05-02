@@ -73,7 +73,3 @@ Before running the scripts, ensure you have the following:
 ## Thank You
 
 Thank you for using these scripts! We hope they make your installation process easier. If you encounter any issues or have feedback, please feel free to raise an issue or pull request on the repository.
-
----
-
-Please review this README for accuracy and completeness based on your repository's current contents and specific requirements. Let me know if there's any additional information you'd like me to include.
