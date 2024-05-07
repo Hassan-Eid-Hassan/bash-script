@@ -8,7 +8,6 @@ INSTALL_DIR="/opt/nexus"
 NEXUS_USER="nexus"
 NEXUS_GROUP="nexus"
 NEXUS_SERVICE="/etc/systemd/system/nexus.service"
-FIREWALL_ZONE="public"
 LOG_FILE="/var/log/nexus_install.log"
 
 # Redirect output to log file
