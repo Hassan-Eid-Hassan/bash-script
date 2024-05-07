@@ -9,6 +9,10 @@ NEXUS_USER="nexus"
 NEXUS_GROUP="nexus"
 NEXUS_SERVICE="/etc/systemd/system/nexus.service"
 FIREWALL_ZONE="public"
+LOG_FILE="/var/log/nexus_install.log"
+
+# Redirect output to log file
+exec &> >(tee -a "$LOG_FILE")
 
 # Function to create a Nexus user and group
 create_nexus_user() {
@@ -90,7 +94,7 @@ display_admin_password() {
     echo "Nexus installation completed successfully."
     echo "You can access Nexus at http://localhost:8081/"
     echo "To log in as admin, find the admin password here:"
-    cat $INSTALL_DIR/sonatype-work/nexus3/admin.password
+    echo "$INSTALL_DIR/sonatype-work/nexus3/admin.password"
 }
 
 # Main function to execute all steps
