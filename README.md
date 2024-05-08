@@ -75,7 +75,7 @@ These scripts install Kubernetes clusters, configure network settings, and manag
 
 1. Clone the repository:
     ```shell
-    git clone [repository-url]
+    git clone https://github.com/Hassan-Eid-Hassan/bash-script.git
     ```
 2. Navigate to the desired script directory.
 3. Ensure the script has execution permissions (`chmod +x script.sh`).
