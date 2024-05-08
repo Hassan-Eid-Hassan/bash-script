@@ -9,30 +9,12 @@ LOG_FILE="/var/log/jenkins_install.log"
 # Redirect output to log file
 exec &> >(tee -a "$LOG_FILE")
 
-# Ask the user if they want to install Java 17
-echo "Would you like to install Java 17? [y/n]"
-read -r answer
+# Install Java 17
 
-# Validate the answer and install Java 17 if requested
-while true; do
-    case "$answer" in
-        y|Y)
-            echo "Installing Java 17..."
-            sudo yum update -y
-            sudo yum install -y java-17-amazon-corretto-devel
-            echo "Java 17 installed."
-            break
-            ;;
-        n|N)
-            echo "Skipping Java 17 installation."
-            break
-            ;;
-        *)
-            echo "Please enter 'y' or 'n':"
-            read -r answer
-            ;;
-    esac
-done
+echo "Installing Java 17..."
+sudo yum update -y
+sudo yum install -y java-17-amazon-corretto-devel
+echo "Java 17 installed."
 
 # Add Jenkins repository and key
 echo "Adding Jenkins repository..."

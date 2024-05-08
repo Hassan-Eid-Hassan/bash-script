@@ -1,80 +1,93 @@
-# Bash Scripts Repository
+# Automated Installation Scripts for Jenkins, SonarQube, Nexus, GitLab, and Kubernetes
 
-Welcome to the Bash Scripts Repository! This repository contains scripts for installing and setting up Jenkins, Nexus, and Kubernetes on different Linux distributions, including AWS Linux, Ubuntu, and RHEL/CentOS. The scripts are organized in separate folders based on the software and target distribution.
+Welcome to the automated installation scripts repository for Jenkins, SonarQube, Nexus, GitLab, and Kubernetes. This repository contains scripts to facilitate the installation and configuration of these software solutions across various operating systems including Ubuntu, RHEL/CentOS, and Amazon Linux (AWS EC2).
 
-## Repository Structure
+## Table of Contents
 
-- **GitLab**: Contains scripts for installing GitLab Community Edition (CE).
-  - `install-gitlab-aws-linux.sh`: Script to install GitLab on AWS Linux EC2.
-  - `install-gitlab-rhel-centos.sh`: Script to install GitLab on RHEL/CentOS.
-  - `install-gitlab-ubuntu.sh`: Script to install GitLab on Ubuntu.
-
-- **Jenkins**: Contains scripts for installing Jenkins.
-  - `jenkins-install-aws-linux.sh`: Script to install Jenkins on AWS Linux.
-  - `jenkins-install-ubuntu.sh`: Script to install Jenkins on Ubuntu.
-  - `jenkins-install-rhel-centos.sh`: Script to install Jenkins on RHEL/CentOS.
-
-- **Nexus**: Contains scripts for installing Nexus.
-  - `nexus-install-aws-linux.sh`: Script to install Nexus on AWS Linux.
-  - `nexus-install-ubuntu.sh`: Script to install Nexus on Ubuntu.
-  - `nexus-install-rhel-centos.sh`: Script to install Nexus on RHEL/CentOS.
-
-- **Kubernetes**: Contains folders for different distributions, each with scripts to install Kubernetes.
-  - **AWS Linux**:
-    - `k8s-master-installation-aws-linux.sh`: Script to install Kubernetes master on AWS Linux.
-    - `k8s-worker-installation-aws-linux.sh`: Script to install Kubernetes worker on AWS Linux.
-  - **RHEL/CentOS**:
-    - `k8s-master-installation-rhel-centos.sh`: Script to install Kubernetes master on RHEL/CentOS.
-    - `k8s-worker-installation-rhel-centos.sh`: Script to install Kubernetes worker on RHEL/CentOS.
+- [Prerequisites](#prerequisites)
+- [Scripts Overview](#scripts-overview)
+  - [Jenkins](#jenkins)
+  - [SonarQube](#sonarqube)
+  - [Nexus](#nexus)
+  - [GitLab](#gitlab)
+  - [Kubernetes](#kubernetes)
+- [How to Use the Scripts](#how-to-use-the-scripts)
+- [Contribution Guidelines](#contribution-guidelines)
+- [Thank You](#thank-you)
 
 ## Prerequisites
 
 Before running the scripts, ensure you have the following:
 
-- **Root access**: You need root access (or sudo privileges) to execute the scripts.
-- **Operating system compatibility**: The scripts are designed to work with specific operating systems and may not be compatible with others.
+- Root permissions or `sudo` access.
+- An active internet connection.
+- Supported operating system (Ubuntu, RHEL/CentOS, Amazon Linux).
+
+## Scripts Overview
+
+### Jenkins
+
+- **Ubuntu:** The script for Ubuntu can be found at `/jenkins/jenkins-install-ubuntu.sh`.
+- **RHEL/CentOS:** The script for RHEL/CentOS can be found at `/jenkins/jenkins-install-rhel-centos.sh`.
+- **Amazon Linux:** The script for Amazon Linux can be found at `/jenkins/jenkins-install-aws-linux.sh`.
+
+These scripts install Jenkins and its dependencies, enable the Jenkins service, and provide access instructions.
+
+### SonarQube
+
+- **Ubuntu:** The script for Ubuntu can be found at `/sonarqube/sonarqube-install-ubuntu.sh`.
+- **RHEL/CentOS:** The script for RHEL/CentOS can be found at `/sonarqube/sonarqube-install-rhel-centos.sh`.
+- **Amazon Linux:** The script for Amazon Linux can be found at `/sonarqube/sonarqube-install-aws-linux.sh`.
+
+These scripts handle SonarQube installation, configuration, and service management.
+
+### Nexus
+
+- **Ubuntu:** The script for Ubuntu can be found at `/nexus/nexus-install-ubuntu.sh`.
+- **RHEL/CentOS:** The script for RHEL/CentOS can be found at `/nexus/nexus-install-rhel-centos.sh`.
+- **Amazon Linux:** The script for Amazon Linux can be found at `/nexus/nexus-install-aws-linux.sh`.
+
+These scripts automate Nexus installation, including setup, configuration, and service management.
+
+### GitLab
+
+- **Ubuntu:** The script for Ubuntu can be found at `/gitlab/gitlab-install-ubuntu.sh`.
+- **RHEL/CentOS:** The script for RHEL/CentOS can be found at `/gitlab/gitlab-install-rhel-centos.sh`.
+- **Amazon Linux:** The script for Amazon Linux can be found at `/gitlab/gitlab-install-aws-linux.sh`.
+
+These scripts manage GitLab installation and configuration for the specified operating systems.
+
+### Kubernetes
+
+The repository includes Kubernetes installation scripts for Amazon Linux and RHEL/CentOS.
+
+- **Amazon Linux:** The scripts for Amazon Linux are located in the following directories:
+  - Master installation: `/kubernetes/aws-linux/k8s-master-installation-aws-linux.sh`
+  - Worker installation: `/kubernetes/aws-linux/k8s-worker-installation-aws-linux.sh`
+
+- **RHEL/CentOS:** The scripts for RHEL/CentOS are located in the following directories:
+  - Master installation: `/kubernetes/rhel-centos/k8s-master-installation-rhel-centos.sh`
+  - Worker installation: `/kubernetes/rhel-centos/k8s-worker-installation-rhel-centos.sh`
+
+These scripts install Kubernetes clusters, configure network settings, and manage nodes.
 
 ## How to Use the Scripts
 
-1. **Clone the repository**: Clone the repository to your local machine using Git:
-
-    ```bash
-    git clone https://github.com/Hassan-Eid-Hassan/bash-script.git
+1. Clone the repository:
+    ```shell
+    git clone [repository-url]
     ```
-
-2. **Navigate to the desired directory**: Enter the directory of the desired software and target distribution:
-
-    ```bash
-    cd bash-script/[jenkins|nexus|kubernetes]/[aws-linux|ubuntu|rhel-centos]
+2. Navigate to the desired script directory.
+3. Ensure the script has execution permissions (`chmod +x script.sh`).
+4. Execute the script with root permissions:
+    ```shell
+    sudo ./script.sh
     ```
-
-3. **Make the script executable**: Run the following command to make the script executable:
-
-    ```bash
-    chmod +x [script-name.sh]
-    ```
-
-4. **Run the script**: Execute the script with the appropriate privileges:
-
-    ```bash
-    sudo ./[script-name.sh]
-    ```
-
-## Logs and Output
-
-- All scripts output logs to a specified log file (e.g., `/var/log/jenkins_install.log`).
-- The logs contain important information about the installation process, including errors, warnings, and progress messages.
-
-## Troubleshooting
-
-- If you encounter any issues, check the logs for error messages and potential solutions.
-- Ensure that you have the required network connectivity and dependencies installed on your system.
 
 ## Contribution Guidelines
 
-- Contributions, such as issues, pull requests, and feedback, are welcome.
-- Please follow the repository's guidelines and code of conduct when contributing.
+Your contributions are welcome! Please follow the repository's contribution guidelines when submitting issues, pull requests, or feedback.
 
 ## Thank You
 
-Thank you for using these scripts! We hope they make your installation process easier. If you encounter any issues or have feedback, please feel free to raise an issue or pull request on the repository.
+Thank you for using the automated installation scripts in this repository! If you encounter any issues or have suggestions for improvements, feel free to provide feedback. Happy coding!
