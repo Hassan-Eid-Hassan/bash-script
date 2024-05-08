@@ -1,24 +1,28 @@
-# Kubernetes and Docker Installation Scripts
+# Kubernetes Installation Scripts for Amazon Linux and RHEL/CentOS
 
-## Overview
-These scripts automate the installation and configuration of Kubernetes and Docker on CentOS/RHEL, AWS-Linux and Ubuntu servers. They remove old versions of Docker and Kubernetes, install necessary packages, and set up Kubernetes clusters.
+This repository contains scripts to automate the installation and configuration of Kubernetes master and worker nodes on Amazon Linux and RHEL/CentOS. These scripts make setting up a Kubernetes cluster a straightforward process.
 
-## Table of Contents
-- [Prerequisites](#prerequisites)
-- [Configuration](#configuration)
-- [How to Execute the Script](#how-to-execute-the-script)
-- [Troubleshooting](#troubleshooting)
-    - [Swap Issues](#swap-issues)
-    - [Networking Issues](#networking-issues)
-    - [CRI and Containerd Issues](#cri-and-containerd-issues)
-- [Thank You](#thank-you)
+## Scripts
+
+### Master Node Installation Scripts
+
+- **Amazon Linux**: [k8s-master-installation-aws-linux.sh](aws-linux/k8s-master-installation-aws-linux.sh)
+- **RHEL/CentOS**: [k8s-master-installation-rhel-centos.sh](rhel-centos/k8s-master-installation-rhel-centos.sh)
+
+### Worker Node Installation Scripts
+
+- **Amazon Linux**: [k8s-worker-installation-aws-linux.sh](aws-linux/k8s-worker-installation-aws-linux.sh)
+- **RHEL/CentOS**: [k8s-worker-installation-rhel-centos.sh](rhel-centos/k8s-worker-installation-rhel-centos.sh)
 
 ## Prerequisites
-- Minimal requirements for Master Node:
+
+- **Operating System**: Choose the script that matches your operating system (Amazon Linux or RHEL/CentOS).
+- **Root Permissions**: The scripts must be run with root permissions (e.g., using `sudo`).
+- **Internet Connection**: An active internet connection is required to download necessary packages.
+- **Minimal requirements for Master Node**:
     - 2 CPUs
     - 2.5 GiB of RAM
-
-- Configure `/etc/hosts` file:
+- **Configure `/etc/hosts` file**:
     ```bash
     sudo vi /etc/hosts
     ```
@@ -29,8 +33,7 @@ These scripts automate the installation and configuration of Kubernetes and Dock
     192.168.15.2  worker1
     192.168.15.3  worker2
     ```
-
-- Disable all swap:
+- **Disable all swap**:
     ```bash
     sudo swapoff -a
     ```
@@ -40,29 +43,55 @@ These scripts automate the installation and configuration of Kubernetes and Dock
     #/dev/mapper/cl_dhcp-swap none swap defaults 0 0
     ```
 
-## Configuration
-- Set up bridged packets to traverse iptables rules.
-- Disable all memory swaps to increase performance.
-- Enable transparent masquerading and facilitate Virtual Extensible LAN (VxLAN) traffic for communication between Kubernetes pods across the cluster.
-- Enable IP masquerade at the firewall.
+## What the Scripts Do
 
-## How to Execute the Script
-- First, make the script executable:
+### Master Node Installation
+
+1. **Install Docker**: Installs Docker and configures it with `systemd` as the cgroup driver.
+2. **Install Kubernetes**: Adds the Kubernetes repository and installs `kubelet`, `kubeadm`, and `kubectl`.
+3. **Configure Kubernetes**: Initializes the Kubernetes master node using a specified Pod network CIDR.
+4. **Apply Pod Network**: Applies a Pod network (e.g., Calico) to the cluster.
+5. **Print Join Command**: Outputs the join command to be used by worker nodes.
+
+### Worker Node Installation
+
+1. **Install Docker**: Installs Docker and configures it with `systemd` as the cgroup driver.
+2. **Install Kubernetes**: Adds the Kubernetes repository and installs `kubelet`, `kubeadm`, and `kubectl`.
+3. **Join the Cluster**: Joins the worker node to the Kubernetes cluster using the join command from the master node.
+
+## How to Use the Scripts
+
+1. **Download the Scripts**: Clone the repository or download the scripts.
+2. **Make the Scripts Executable**: Run the following command to make the script executable:
     ```bash
-    sudo chmod +x scriptname.sh
+    chmod +x k8s-master-installation-[os].sh
+    chmod +x k8s-worker-installation-[os].sh
+    ```
+    Replace `[os]` with your operating system, either `aws-linux` or `rhel-centos`.
+
+3. **Run the Script**: Execute the appropriate script with root privileges:
+
+    For Master Node:
+    ```bash
+    sudo ./k8s-master-installation-[os].sh
     ```
 
-- Execute the script using one of the following methods:
-
-    **Method 1:**
+    For Worker Node:
     ```bash
-    sudo ./scriptname.sh
+    sudo ./k8s-worker-installation-[os].sh
     ```
 
-    **Method 2:**
-    ```bash
-    sudo bash scriptname.sh
-    ```
+4. **Follow the Output**: The scripts will guide you through the installation process.
+
+## Modifying the Scripts
+
+The scripts can be customized to suit your needs:
+
+- **Pod Network CIDR**: You can change the Pod network CIDR used during the Kubernetes cluster initialization by modifying the `POD_NETWORK_CIDR` variable in the master installation scripts.
+- **Kubernetes Repository URL**: If you wish to use a different Kubernetes repository URL, you can change the value of the `K8S_REPO_URL` variable in the scripts.
+- **GPG Key URL**: If you prefer to use a different GPG key URL for the repository, modify the `K8S_GPG_KEY` variable in the scripts.
+- **Containerd Configuration**: You can further customize the containerd configuration if required by modifying the `configure_containerd` function.
+- **Logging**: Modify the log file path by changing the `LOG_FILE` variable in the scripts.
 
 ## Troubleshooting
 ### Swap Issues
@@ -123,5 +152,10 @@ These scripts automate the installation and configuration of Kubernetes and Dock
     sudo swapoff -a
     ```
 
+## Contribution Guidelines
+
+Contributions and feedback are welcome. Please follow the repository's guidelines when contributing.
+
 ## Thank You
-Thank you for using the scripts. If you encounter any issues or have suggestions for improvement, please feel free to open an issue or contribute to the repository.
+
+Thank you for using these scripts! If you have any suggestions for improvements, feel free to provide feedback.
