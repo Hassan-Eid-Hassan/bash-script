@@ -25,7 +25,7 @@ Before running the scripts, ensure you have the following:
 
 ## Scripts Overview
 
-### Jenkins
+### [Jenkins](https://github.com/Hassan-Eid-Hassan/bash-script/tree/main/jenkins)
 
 - **Ubuntu:** The script for Ubuntu can be found at `/jenkins/jenkins-install-ubuntu.sh`.
 - **RHEL/CentOS:** The script for RHEL/CentOS can be found at `/jenkins/jenkins-install-rhel-centos.sh`.
@@ -33,7 +33,7 @@ Before running the scripts, ensure you have the following:
 
 These scripts install Jenkins and its dependencies, enable the Jenkins service, and provide access instructions.
 
-### SonarQube
+### [SonarQube](https://github.com/Hassan-Eid-Hassan/bash-script/tree/main/sonarqube)
 
 - **Ubuntu:** The script for Ubuntu can be found at `/sonarqube/sonarqube-install-ubuntu.sh`.
 - **RHEL/CentOS:** The script for RHEL/CentOS can be found at `/sonarqube/sonarqube-install-rhel-centos.sh`.
@@ -41,7 +41,7 @@ These scripts install Jenkins and its dependencies, enable the Jenkins service, 
 
 These scripts handle SonarQube installation, configuration, and service management.
 
-### Nexus
+### [Nexus](https://github.com/Hassan-Eid-Hassan/bash-script/tree/main/nexus)
 
 - **Ubuntu:** The script for Ubuntu can be found at `/nexus/nexus-install-ubuntu.sh`.
 - **RHEL/CentOS:** The script for RHEL/CentOS can be found at `/nexus/nexus-install-rhel-centos.sh`.
@@ -49,7 +49,7 @@ These scripts handle SonarQube installation, configuration, and service manageme
 
 These scripts automate Nexus installation, including setup, configuration, and service management.
 
-### GitLab
+### [GitLab](https://github.com/Hassan-Eid-Hassan/bash-script/tree/main/gitlab)
 
 - **Ubuntu:** The script for Ubuntu can be found at `/gitlab/gitlab-install-ubuntu.sh`.
 - **RHEL/CentOS:** The script for RHEL/CentOS can be found at `/gitlab/gitlab-install-rhel-centos.sh`.
@@ -57,7 +57,7 @@ These scripts automate Nexus installation, including setup, configuration, and s
 
 These scripts manage GitLab installation and configuration for the specified operating systems.
 
-### Kubernetes
+### [Kubernetes](https://github.com/Hassan-Eid-Hassan/bash-script/tree/main/kubernetes)
 
 The repository includes Kubernetes installation scripts for Amazon Linux and RHEL/CentOS.
 
