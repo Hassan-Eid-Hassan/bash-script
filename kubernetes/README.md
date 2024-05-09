@@ -1,3 +1,7 @@
+<a href="https://kubernetes.io">
+    <img width="500" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Kubernetes_logo.svg/2560px-Kubernetes_logo.svg.png" alt="Kubernetes logo"> 
+</a>
+
 # Kubernetes Installation Scripts for Amazon Linux and RHEL/CentOS
 
 This repository contains scripts to automate the installation and configuration of Kubernetes master and worker nodes on Amazon Linux and RHEL/CentOS. These scripts make setting up a Kubernetes cluster a straightforward process.
