@@ -1,5 +1,5 @@
 <a href="https://about.gitlab.com">
-    <img src="https://images.ctfassets.net/xz1dnu24egyd/1hnQd13UBU7n5V0RsJcbP3/769692e40a6d528e334b84f079c1f577/gitlab-logo-100.png" alt="GitLab logo"> 
+    <img width="500" src="https://images.ctfassets.net/xz1dnu24egyd/1hnQd13UBU7n5V0RsJcbP3/769692e40a6d528e334b84f079c1f577/gitlab-logo-100.png" alt="GitLab logo"> 
 </a>
 
 # GitLab Installation Scripts
