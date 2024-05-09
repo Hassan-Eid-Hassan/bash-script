@@ -5,9 +5,9 @@
     <h1 align="center">Automated Installation Scripts for Jenkins, SonarQube, Nexus, GitLab, and Kubernetes</h1>
 </p>
 <h3 align="center">
-    <img src="https://img.shields.io/github/license/Hassan-Eid-Hassan/bash-script?style=flat&color=0080ff" alt="License Badge">
-    <img src="https://img.shields.io/github/last-commit/Hassan-Eid-Hassan/bash-script?style=flat&logo=git&logoColor=white&color=0080ff" alt="Last Commit Badge">
-    <img src="https://img.shields.io/github/languages/top/Hassan-Eid-Hassan/bash-script?style=flat&color=0080ff" alt="Top Language Badge">
+    <img src="https://img.shields.io/github/license/Hassan-Eid-Hassan/bash-script?logoColor=white&label=License&color=F44336" alt="License Badge">
+    <img src="https://img.shields.io/github/last-commit/Hassan-Eid-Hassan/bash-script?style=flat&logo=git&logoColor=white&color=FFFFFF" alt="Last Commit Badge">
+    <img src="https://img.shields.io/github/languages/top/Hassan-Eid-Hassan/bash-script?style=flat&color=000000" alt="Top Language Badge">
 </h3>
 
 <p align="left">
