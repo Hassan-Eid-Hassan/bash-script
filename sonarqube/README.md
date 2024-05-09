@@ -1,3 +1,7 @@
+<a href="https://www.sonarsource.com/products/sonarqube/">
+    <img align="center" width="500" src="https://cdn.worldvectorlogo.com/logos/sonarqube.svg" alt="Sonarqube logo"> 
+</a>
+
 # SonarQube Installation Scripts for Ubuntu, Amazon Linux (AWS EC2), and RHEL/CentOS
 
 This repository contains scripts to automate the installation of SonarQube (latest version) on Ubuntu, Amazon Linux (AWS EC2), and RHEL/CentOS. Each script installs SonarQube, configures it, and starts the service. The scripts are designed to run with root permissions.
