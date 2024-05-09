@@ -1,3 +1,7 @@
+<a href="https://jenkins.io">
+    <img align="center" width="400" src="https://www.jenkins.io/images/jenkins-logo-title-dark.svg" alt="Jenkins logo"> 
+</a>
+
 # Jenkins Installation Scripts
 
 This repository contains scripts to automate the installation of Jenkins on different Linux distributions: Ubuntu, AWS Linux (Amazon Linux), and RHEL/CentOS.
