@@ -1,6 +1,19 @@
-# Automated Installation Scripts for Jenkins, SonarQube, Nexus, GitLab, and Kubernetes
+<h2 align="center">
+    <img src="https://cdn.rawgit.com/odb/official-bash-logo/master/assets/Logos/Identity/PNG/BASH_logo-transparent-bg-color.png" alt="Bash Logo">
+</h2>
+<p align="center">
+    <h1 align="center">Automated Installation Scripts for Jenkins, SonarQube, Nexus, GitLab, and Kubernetes</h1>
+</p>
+<h3 align="center">
+    <img src="https://img.shields.io/github/license/Hassan-Eid-Hassan/bash-script?style=flat&color=0080ff" alt="License Badge">
+    <img src="https://img.shields.io/github/last-commit/Hassan-Eid-Hassan/bash-script?style=flat&logo=git&logoColor=white&color=0080ff" alt="Last Commit Badge">
+    <img src="https://img.shields.io/github/languages/top/Hassan-Eid-Hassan/bash-script?style=flat&color=0080ff" alt="Top Language Badge">
+</h3>
 
-Welcome to the automated installation scripts repository for Jenkins, SonarQube, Nexus, GitLab, and Kubernetes. This repository contains scripts to facilitate the installation and configuration of these software solutions across various operating systems including Ubuntu, RHEL/CentOS, and Amazon Linux (AWS EC2).
+<p align="left">
+    <strong>Welcome to the automated installation scripts repository!</strong> This project provides a collection of scripts for the seamless installation and configuration of Jenkins, SonarQube, Nexus, GitLab, and Kubernetes. These scripts are designed to work with various operating systems, including Ubuntu, RHEL/CentOS, and Amazon Linux (AWS EC2). 
+</p>
+
 
 ## Table of Contents
 
