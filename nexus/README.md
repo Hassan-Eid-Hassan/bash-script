@@ -1,3 +1,7 @@
+<a href="https://www.sonatype.com/products/sonatype-nexus-repository">
+    <img align="center" width="780" src="https://repository.ow2.org/nexus/images/NexusRepoMngr_withSonatype@3x.png" alt="Nexus logo"> 
+</a>
+
 # Nexus Installation Scripts for Ubuntu, Amazon Linux (AWS EC2), and RHEL/CentOS
 
 This repository contains scripts to automate the installation of Nexus Repository Manager (latest version) on Ubuntu, Amazon Linux (AWS EC2), and RHEL/CentOS. Each script installs Nexus, configures it, and starts the service. The scripts are designed to run with root permissions.
