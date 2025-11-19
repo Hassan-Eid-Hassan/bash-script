@@ -3,8 +3,8 @@
 set -e  # Exit script on any command failure
 
 # Constants
-K8S_REPO_URL="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/"
-K8S_GPG_KEY="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key"
+K8S_REPO_URL="https://pkgs.k8s.io/core:/stable:/v1.34/rpm/"
+K8S_GPG_KEY="https://pkgs.k8s.io/core:/stable:/v1.34/rpm/repodata/repomd.xml.key"
 LOG_FILE="/var/log/k8s_install.log"
 AUTO_HASH_SWAP="false"
 
@@ -23,7 +23,7 @@ log_output() {
 # Function to install Docker
 install_docker() {
     echo "Installing Docker..."
-    yum install -y yum-utils dnf iproute-tc
+    yum install -y yum-utils dnf iproute-tc conntrack
     yum install -y docker
     systemctl enable --now docker
     echo "Docker installation completed."

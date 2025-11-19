@@ -9,12 +9,12 @@ LOG_FILE="/var/log/jenkins_install.log"
 # Redirect output to log file
 exec &> >(tee -a "$LOG_FILE")
 
-# Install Java 17
+# Install Java 21
 
-echo "Installing Java 17..."
+echo "Installing Java 21..."
 sudo apt update -y
-sudo apt install -y openjdk-17-jdk
-echo "Java 17 installed."
+sudo apt install -y fontconfig openjdk-21
+echo "Java 21 installed."
 
 # Add Jenkins repository and key
 echo "Adding Jenkins repository..."

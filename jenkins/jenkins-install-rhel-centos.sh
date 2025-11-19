@@ -9,12 +9,12 @@ LOG_FILE="/var/log/jenkins_install.log"
 # Redirect output to log file
 exec &> >(tee -a "$LOG_FILE")
 
-# Install Java 17
+# Install Java 21
 
-echo "Installing Java 17..."
+echo "Installing Java 21..."
 sudo yum update -y
-sudo yum install -y java-17-openjdk java-17-openjdk-devel
-echo "Java 17 installed."
+sudo yum install -y fontconfig java-21-openjdk
+echo "Java 21 installed."
 
 # Add Jenkins repository and key
 echo "Adding Jenkins repository..."

@@ -4,9 +4,9 @@ set -e  # Exit script on any command failure
 
 # Constants
 POD_NETWORK_URL="https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml"
-K8S_REPO_URL="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/"
-K8S_GPG_KEY="https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key"
-POD_NETWORK_CIDR="192.168.0.0/16"
+K8S_REPO_URL="https://pkgs.k8s.io/core:/stable:/v1.34/rpm/"
+K8S_GPG_KEY="https://pkgs.k8s.io/core:/stable:/v1.34/rpm/repodata/repomd.xml.key"
+POD_NETWORK_CIDR="10.244.0.0/16"
 LOG_FILE="/var/log/k8s_install.log"
 AUTO_HASH_SWAP="false"
 
@@ -25,7 +25,7 @@ log_output() {
 # Function to install Docker
 install_docker() {
     echo "Installing Docker..."
-    yum install -y yum-utils dnf iproute-tc
+    yum install -y yum-utils dnf iproute-tc conntrack
     yum install -y docker
     systemctl enable --now docker
     echo "Docker installation completed."
